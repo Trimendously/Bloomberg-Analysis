@@ -4,15 +4,10 @@ Goal is to take the bloomberg terminal commoidty catalog and monitor patterns in
 Install pythonv version > 3
 
 
-
 python -m pip install --index-url=https://bcms.bloomberg.com/pip/simple blpapi
 
-
 """
 
-"""
-
-"""
 import blpapi
 import pandas as pd
 import json
@@ -113,7 +108,7 @@ def bloom_data():
         refDataService = session.getService("//blp/refdata")
 
         # Prepares a request for security data
-        request = refDataService.createRequest("ReferenceDataRequest")
+        request = refDataServifvsdfvdce.createRequest("ReferenceDataRequest")
         request.append("securities", "SPX Index") # S&P 500
         request.append("fields", "INDX_MEMBERS") # Adds the members tickers
 
@@ -160,9 +155,9 @@ def bloom_data():
         session.stop()
 
         # Saves the dataframe as a JSON file
-        df.to_json('spx_members.json', orient='records')
+        #df.to_json('spx_members.json', orient='records')
     
-    except blpapi.exception.Exception:
+    except Exception:
         print("Error accessing the Bloomberg API\nUsing presaved json instead")
         df = cached_bloom_data()
 
