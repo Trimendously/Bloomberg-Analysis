@@ -129,7 +129,7 @@ def is_shutdown(date):
     date = date.date()
 
     shutdowns = [
-        datetime.date(1963, 11, 25) # President John F. Kennedy mourning
+        datetime.date(1963, 11, 25), # President John F. Kennedy mourning
         datetime.date(1969, 7, 21), # Apollo II moon landing
         datetime.date(1977, 7, 14), # Major blackout across New York City
         datetime.date(2001, 9, 11), # 9-11
