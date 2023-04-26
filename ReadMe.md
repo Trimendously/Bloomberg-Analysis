@@ -14,8 +14,7 @@ The goal of this application is to facilitate for anlysis of U.S Congress bills 
 Instructions for installing the project.
 
 Install latest version of python from https://www.python.org/downloads/
-    
-    -make sure to click the box to add python to your path when installing
+make sure to click the box to add python to your path when installing
 
 
 Make sure that you have a working Bloomberg Terminal subscription and ensure that you are logged in to your account on your local machine.
