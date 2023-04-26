@@ -155,14 +155,10 @@ class Main_Page:
     def confirmationPage(self, options, month, day, year):
         date = [None]*2
         check = True
-        for i in  range(2):
-            if not date_config(options[i],month[i].get(),day[i].get(),year[i].get()):
-                check = False
-            else:
-                date[i] = datetime.datetime(year[i], month[i], day[i])
+        check, date = date_config(options,month,day,year)
 
-        if check == True
-            company_page(subject,bloom,date)
+        #if check == True:
+            #company_page(subject,bloom,date)
 
 
 # Sets color theme
@@ -172,8 +168,10 @@ def theme(index):
     else:
         return 'blue'
 
-bloom = bloom_data()
-subjects = subject_list()
+#bloom = bloom_data()
+#subjects = subject_list()
+bloom = []
+subjects=[]
 app = Main_Page(subjects,bloom)
 
 
