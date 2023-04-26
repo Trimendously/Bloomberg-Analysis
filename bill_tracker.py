@@ -13,7 +13,7 @@ PROPUBLICA_API_KEY = os.environ.get('PROPUBLICA_API_KEY')
 # Loads the cached data if we have exceeded daily api requests
 def cached_bills_data():
     try:
-        with open("bills.json", "r") as file:
+        with open("cached_data/bills.json", "r") as file:
             data = json.load(file)
             bills = data['bills']
             accessed_datetime = data['accessed_datetime']
@@ -27,7 +27,7 @@ def cached_bills_data():
 
 def cached_subjects_data():
     try:
-        with open("subjects.json", "r") as file:
+        with open("cached_data/subjects.json", "r") as file:
             data = json.load(file)
             subjects = data["subjects"]
             accessed_datetime = data['accessed_datetime']
@@ -57,8 +57,10 @@ def subject_list():
         }
 
 
-        # Writes the cached data to a file
-        with open("subjects.json", "w") as outfile:
+        # Writes the cached data to a file in a folder
+        if not os.path.exists("cached_data"):
+            os.makedirs("cached_data")
+        with open("cached_data/subjects.json", "w") as outfile:
             json.dump(cached_data, outfile)
 
 
@@ -82,7 +84,7 @@ def bill_tracker(subject):
     endpoint = "https://api.propublica.org/congress/v1/bills/search.json"
 
     # Headers for the API call
-    headers = {"X-API-Key": api_key}
+    headers = {"X-API-Key": PROPUBLICA_API_KEY}
 
     # Parameters for the API call
     params = {"query": subject}
@@ -106,9 +108,11 @@ def bill_tracker(subject):
             "accessed_datetime": str(datetime.datetime.now())
         }
         
-        # Writes the cached data to a file
-        with open("bills.json", "w") as outfile:
-            json.dump(cached_data, outfile)     
+        # Writes the cached data to a file in a new folder
+        if not os.path.exists("cached_data"):
+            os.makedirs("cached_data")
+        with open("cached_data/bills.json", "w") as outfile:
+            json.dump(cached_data, outfile) 
 
     except requests.exceptions.HTTPError as err:
         print(f"HTTP Error: {err}")
@@ -131,3 +135,6 @@ def bill_tracker(subject):
             bills_counter[introduced_date_str] += 1
     print(bills_counter)
 
+# For testing
+#subject_list()
+bill_tracker('Labor market')
