@@ -1,7 +1,7 @@
 import os,sys
 import subprocess
-# implement pip as a subprocess to install packages:
 
+# implement pip as a subprocess to install packages:
 subprocess.check_call([sys.executable, "-m", "pip", "install", "-q","-r", "requirements.txt"])
 
 # GUI Tools
@@ -9,11 +9,11 @@ from tkinter import*
 from tkinter import ttk
 from tkinter import simpledialog
 
-# Makes tables and allows reading of csv files
+# Makes tables and allows data analysis
 import pandas as pd
 import pandastable as pt
-
 import numpy as np
+
 # Will fetch the html files
 import requests
 
@@ -26,7 +26,7 @@ from bill_tracker import*
 from bloom_extract import*
 from date_validator import *
 
-# For date validtion/ formatting
+# For date validation/ formatting
 import datetime
 
 #WIP
@@ -172,10 +172,8 @@ def theme(index):
     else:
         return 'blue'
 
-#bloom = bloom_data()
-bloom = []
-subjects = []
-#subjects = subject_list()
+bloom = bloom_data()
+subjects = subject_list()
 app = Main_Page(subjects,bloom)
 
 

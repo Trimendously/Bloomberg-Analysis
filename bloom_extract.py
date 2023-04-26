@@ -1,22 +1,16 @@
-"""
-Goal is to take the bloomberg terminal commoidty catalog and monitor patterns in concurrence with the rate of environment legislation /events to quantify there impact numerically
+import logging
+import os,sys
 
-Install pythonv version > 3
-
-
-python -m pip install --index-url=https://bcms.bloomberg.com/pip/simple blpapi
-
-"""
 
 import blpapi
 import pandas as pd
 import json
-import datetime
+
 
 # Loads the cached data if we don't have access to a bloomberg terminal
 def cached_bloom_data():
     try:
-        with open("spx_members.json", "r") as file:
+        with open("cached_data/spx_members.json", "r") as file:
             data = json.load(file)
                      
     except (FileNotFoundError, json.JSONDecodeError) as err:
@@ -87,24 +81,22 @@ def bloom_data():
                 
         
     df = pd.DataFrame(columns=['ticker','name','sector'])
-    date = "Price (20230423)"
-
-
+    date = "Price (20230423)" # Temporary
     try :
+
         # Start a Bloomberg session
         sessionOptions = blpapi.SessionOptions()
         sessionOptions.setServerHost('localhost')
         sessionOptions.setServerPort(8194)
         session = blpapi.Session(sessionOptions)
-
+    
         if not session.start():
-            print("Failed to start session.")
-            sys.exit()
+            raise Exception("Failed to start session.")
 
         # Opens a service to get reference data from Bloomberg
         if not session.openService("//blp/refdata"):
-            print("Failed to open //blp/refdata")
-            sys.exit()
+            raise Exception("Failed to open //blp/refdata")
+
         refDataService = session.getService("//blp/refdata")
 
         # Prepares a request for security data
@@ -119,6 +111,7 @@ def bloom_data():
             event = session.nextEvent()
             if event.eventType() == blpapi.Event.RESPONSE:
                 break
+
 
         # Extract the security data from the response
         company_counter = 0
@@ -155,17 +148,14 @@ def bloom_data():
         session.stop()
 
         # Saves the dataframe as a JSON file
-        #df.to_json('spx_members.json', orient='records')
+        if not os.path.exists("cached_data"):
+            os.makedirs("cached_data")
+        
+        df.to_json("cached_data/spx_members.json", orient='records')
     
-    except Exception:
-        print("Error accessing the Bloomberg API\nUsing presaved json instead")
+    except Exception as e:
+        print("Error accessing the Bloomberg API: ", e,"\nUsing presaved json instead")
         df = cached_bloom_data()
 
     finally :
         return df
-
-
-member_tickers = []
-df = bloom_data()
-unique_elements = df["sector"].unique().tolist()
-print("Unique sectors are ", unique_elements)

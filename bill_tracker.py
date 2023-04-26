@@ -135,6 +135,3 @@ def bill_tracker(subject):
             bills_counter[introduced_date_str] += 1
     print(bills_counter)
 
-# For testing
-#subject_list()
-bill_tracker('Labor market')
