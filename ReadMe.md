@@ -18,7 +18,7 @@ Install latest version of python from https://www.python.org/downloads/
 
 Make sure that you have a working Bloomberg Terminal subscription and ensure that you are logged in to your account on your local machine.
 (This has not been tested on Bloomberg Anywhere)
-'''
+''' bash
 $ git clone https://github.com/Trimendously/Bloomberg-Analysis.git
 $ cd Bloomberg-Analysis
 $ python -m pip install --index-url=https://bcms.bloomberg.com/pip/simple blpapi
