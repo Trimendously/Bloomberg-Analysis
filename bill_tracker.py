@@ -17,13 +17,13 @@ def cached_bills_data():
             data = json.load(file)
             bills = data['bills']
             accessed_datetime = data['accessed_datetime']
-            print("Using cached bills data from ",accessed_datetime)
+            error_message = "HTTP Error\nUsing cached bills data from " + accessed_datetime
             
     except (FileNotFoundError, json.JSONDecodeError) as err:
-        print(f"Error loading the cached bills data: {err}")
+        error_message = "HTTP Error\nNo cached data exists"
         bills = []
 
-    return bills
+    return bills,error_message
 
 def cached_subjects_data():
     try:
@@ -31,18 +31,18 @@ def cached_subjects_data():
             data = json.load(file)
             subjects = data["subjects"]
             accessed_datetime = data['accessed_datetime']
-            print("Using cached subjects data from ",accessed_datetime)
+            error_message = "HTTP Error\nUsing cached subjects data from " + accessed_datetime
             
     except (FileNotFoundError, json.JSONDecodeError) as err:
-        print(f"Error loading the cached subjects data: {err}")
+        error_message = "HTTP Error\nNo cached data exists"
         subjects = []
         
-    return subjects
+    return subjects,error_message
 
 def subject_list():
     url = "https://api.propublica.org/congress/v1/bills/subjects.json"
     headers = {'X-API-Key': PROPUBLICA_API_KEY}
-
+    error_message = ""
     try:
         response = requests.get(url, headers=headers)
         response.raise_for_status()
@@ -65,18 +65,15 @@ def subject_list():
 
 
     except requests.exceptions.HTTPError as err:
-        print(f"HTTP Error: {err}")
-        subjects = cached_subjects_data()
+        #print(f"HTTP Error: {err}")
+        subjects,error_message = cached_subjects_data()
 
     except requests.exceptions.RequestException as err:
-        print(f"Request Error: {err}")
-        subjects = cached_subjects_data()
+        #print(f"Request Error: {err}")
+        subjects,error_message = cached_subjects_data()
 
-    print("Potential search queries:")
-    for subject in subjects:
-        print(subject['name'])
 
-    return subjects
+    return subjects,error_message
 
 def bill_tracker(subject):
 
@@ -116,22 +113,11 @@ def bill_tracker(subject):
 
     except requests.exceptions.HTTPError as err:
         print(f"HTTP Error: {err}")
-        bills = cached_bills_data()
+        bills,error_message = cached_bills_data()
             
     except requests.exceptions.RequestException as err:
         print(f"Request Error: {err}")
-        bills = cached_bills_data()
+        bills,error_message = cached_bills_data()
 
-    for bill in bills:
-        print("\n\nBill Title: ",bill['title'])
-        print("Introduced Date: ",bill['introduced_date'])
-        
-        introduced_date_obj = datetime.datetime.strptime(bill['introduced_date'], "%Y-%m-%d")
-        introduced_date_str = introduced_date_obj.strftime("%Y-%m-%d")
-
-        if introduced_date_str not in bills_counter:
-            bills_counter[introduced_date_str] = 1
-        else:
-            bills_counter[introduced_date_str] += 1
-    print(bills_counter)
+    return bills,error_message
 

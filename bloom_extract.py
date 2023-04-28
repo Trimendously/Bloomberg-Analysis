@@ -12,13 +12,16 @@ def cached_bloom_data():
     try:
         with open("cached_data/spx_members.json", "r") as file:
             data = json.load(file)
+            # Need to add date in json
+            error_message = "Connection Error\nUsing cached Bloomberg Terminal data"
                      
     except (FileNotFoundError, json.JSONDecodeError) as err:
         print(f"Error loading the cached Bloom data: {err}")
+        error_message = "Connection Error\nNo cached data exists"
         data = []
 
     df_bloom = pd.DataFrame(data)
-    return df_bloom
+    return df_bloom,error_message
 
 
 
@@ -82,6 +85,7 @@ def bloom_data():
         
     df = pd.DataFrame(columns=['ticker','name','sector'])
     date = "Price (20230423)" # Temporary
+    error_message = ""
     try :
 
         # Start a Bloomberg session
@@ -154,8 +158,8 @@ def bloom_data():
         df.to_json("cached_data/spx_members.json", orient='records')
     
     except Exception as e:
-        print("Error accessing the Bloomberg API: ", e,"\nUsing presaved json instead")
-        df = cached_bloom_data()
+        #print("Error accessing the Bloomberg API: ", e,"\nUsing presaved json instead")
+        df,error_message = cached_bloom_data()
 
     finally :
-        return df
+        return df,error_message

@@ -32,10 +32,10 @@ from date_validator import *
 import datetime
 
 #WIP
-class company_page:
-    def __init__(self,subject):
+class sector_page:
+    def __init__(self,date):
         self.window = Tk()
-        self.window.title("Bloomberg Terminal S&P 500 Index Companies")
+        self.window.title("Company Sectors/ Bill Subject")
         self.window.attributes('-fullscreen',False) #Makes the page take up the full screen
 
         #Allows user toggle full screen if desired
@@ -47,9 +47,9 @@ class company_page:
         height = self.window.winfo_screenheight()
         self.window.geometry(str(width)+ "x" + str(height)) #Sets resolution
 
-
+        self.date = date
         #Sets up the buttons
-        self.buttons(subjects)
+        self.company_sector()
         self.window.mainloop()
 
     def toggleFullScreen(self, event):
@@ -59,29 +59,62 @@ class company_page:
         self.fullScreenState = False
         self.window.attributes("-fullscreen", self.fullScreenState)
 
-    def buttons(self,bills):
-        self.selected = []
+    def company_sector(self):
+        global selected_sector
+        global selected_subject
 
-        for i,bill in enumerate(bills):
-            # Creates a color theme
-            color = theme(i)
-            
-            # Selecting product class to operate on
-            b = Button(self.window,text="Select Product Class" ,background=color)
-            b.grid(row=i, column=0)
-            b.config(command = lambda e=i, b = b: self.productPage(e, b))
+        bloom,bloom_error = bloom_data() # Extracts bloom data
+        subjects,subject_error = subject_list() 
 
-            # Displays the product class name
-            self.e = Entry(self.window, width=150, fg='white',font=('Arial',16,'bold'),background = color)
-            self.e.grid(row=i, column= 1)
-            self.e.insert(END, subject['name'])
+        # bloom = bloom_data(date)
+        sectors = bloom["sector"].unique().tolist()
+        selected_sectors = ['0']*len(sectors)
 
-    def productPage(self,index,btn):
-        stats = Category_Page(data,index)
+        prompt = Label(self.window,text = "Please select the S&P 500 company sector(s) that you desire:",font = 30)
+        prompt.grid(row = 0, column = 0)
+
+        for i,sector in enumerate(sectors):
+            selected_sectors[i] = ttk.Checkbutton(self.window,text=sector,style = "b.TCheckbutton")
+            selected_sectors[i].grid(row=i+1, column=0)
+
+        
+
+        subjects,error_message = subject_list() 
+        selected_subjects = ['0']*len(subjects)
+
+        prompt = Label(self.window,text = "Please select the US Congress bill subject(s) that you desire:",font = 30)
+        prompt.grid(row = i+2, column = 0)
+        for j,subject in enumerate(subjects):
+            selected_subjects[j] = ttk.Checkbutton(self.window,text=subject['name'],style = "b.TCheckbutton")
+            selected_subjects[j].grid(row=i+3+j, column=0)
+
+        confirm = Button(self.window,text = "Continue", font = 30)
+        confirm.grid(row = i+4+j, column = 0)
+        #confirm.config(command = lambda: self.bill_subject())
+        if bloom_error != "":
+            messagebox.showinfo("Error", bloom_error, parent = self.window)
+        if subject_error != "":
+            messagebox.showinfo("Error", subject_error,parent = self.window)
+
+    def bill_subject(self):
+        global selected_subject
+
+        subjects = subject_list() 
+        selected_subjects = ['0']*len(subjects)
+
+        prompt = Label(self.window,text = "Please select the US Congress bill subject(s) that you desire:",font = 30)
+        prompt.grid(row = 0, column = 0)
+        for i,subject in enumerate(subjects):
+            selected_subjects[i] = ttk.Checkbutton(self.window,text=subject['name'],style = "b.TCheckbutton")
+            selected_subjects[i].grid(row=i+1, column=0)
+
+        confirm = Button(self.window,text = "Continue", font = 30)
+        confirm.grid(row = i+2, column = 0)
+        confirm.config(command = lambda: self.bill_subject())
 
 
 class Main_Page:
-    def __init__(self,subjects,bloom):
+    def __init__(self):
         self.window = Tk()
         self.window.title("Bloomberg Terminal S&P 500 Index Companies")
         self.window.attributes('-fullscreen',False) #Makes the page take up the full screen
@@ -97,7 +130,7 @@ class Main_Page:
 
 
         #Sets up the buttons
-        self.buttons(subjects)
+        self.buttons()
         self.window.mainloop()
 
     def toggleFullScreen(self, event):
@@ -112,7 +145,7 @@ class Main_Page:
         date_str = simpledialog.askstring("Input", "Enter a date (mm-dd-yyyy): ", parent=self.window)
         print(f"Button {event.widget['text']} clicked. Date entered: {date_str}")
 
-    def buttons(self,subjects):
+    def buttons(self):
         color = theme(0)
         options = ["Start Date", "End Date"]
         month = [None]*2
@@ -159,7 +192,10 @@ class Main_Page:
         check = True
         date, error = date_config(options,month,day,year)
 
-        if len(error) != 0:
+        if len(error) == 0:
+            messagebox.showinfo("Confirmation", "All entries are valid")
+            sector_page(date)
+        else:
             messagebox.showerror("Error", error)
 
 
@@ -168,13 +204,11 @@ def theme(index):
     if index % 2 == 0:
         return 'white'
     else:
-        return 'blue'
+        return 'white'
 
-#bloom = bloom_data()
-#subjects = subject_list()
-bloom = []
-subjects=[]
-app = Main_Page(subjects,bloom)
+#bloom = []
+#subjects=[]
+app = Main_Page()
 
 
 
