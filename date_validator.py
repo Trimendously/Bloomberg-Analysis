@@ -151,6 +151,8 @@ def date_config(options,month_list,day_list,year_list):
     now = datetime.datetime.now()
     today = now.date()
     date = [today,today]
+    month_name = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    error_message = []
     for i in range(2):
         month = month_list[i].get()
         day = day_list[i].get()
@@ -165,45 +167,46 @@ def date_config(options,month_list,day_list,year_list):
 
         elif ((month == "") or (day == "") or (year == "")):
             if (month == ""):
-                print("Missing month entry for" ,option)
+                error_message.append("Missing month entry for "+ option)
             if (day == ""):
-                print("Missing day entry for" ,option)
+                error_message.append("Missing day entry for " +option)
             if (year == ""):
-                print("Missing year entry for" ,option)
-            return False,date
+                error_message.append("Missing year entry for " +option)
+            return date,error_message
 
         month = int(month)
         year = int(year)
         day = int(day)
         if not 1 <= month <= 12:
-            print("Invalid month entry for <{}>\nPlease input an integer in the range 1-12".format(option))
-            return False,date
+            error_message.append("Invalid month entry for "+ option+"\nPlease input an integer in the range 1-12")
+            return date,error_message
 
         if not 1 <= year <= today.year:
-            print("Invalid year entry for <{}>\nPlease input a year before or equal to this year".format(option))
-            return False,date
+            error_message.append("Invalid year entry for "+ option+"\nPlease input a year before or equal to this year")
+            return date,error_message
         if (year == today.year):
             if (month > today.month):
-                print("Invalid month entry for <{}>\nPlease input a month before or equal to this month".format(option))
-                return False,date
+                error_message.append("Invalid month entry for "+ option+"\nPlease input a month before or equal to this month")
+                return date,error_message
             if (month == today.month):
                 if (day >= today.day):
-                    print("Invalid date entry for <{}>\nPlease input a date before today of this month".format(option))
-                    return False,date
+                    error_message.append("Invalid date entry for "+ option+"\nPlease input a date before today of this month")
+                    return date,error_message
 
         try:
             date[i] = datetime.datetime(year, month, day)
         except ValueError:
-            print("Invalid date entry for <{}>\nPlease input a valid date for the month: {}".format(option,month))
-            return False,date
+            error_message.append("Invalid date entry for "+ option+"\nPlease input a valid date for the month: " + month_name[month])
+            return date,error_message
         if (date[i].weekday() >=5):
-            print("Invalid date entry for <{}>\nPlease input a valid date during the week".format(option))
-            return False,date
+            error_message.append("Invalid date entry for "+ option+"\nPlease input a valid date during the week")
+            return date,error_message
         elif is_common_holiday(date[i]):
-            print("Invalid date entry for <{}>\nPlease input a valid date that is not a holiday.".format(option))
-            return False,date
+            #Add holiday name printing functionality
+            error_message.append("Invalid date entry for "+ option+"\nPlease input a valid date that is not a holiday")
+            return date,error_message
         elif is_shutdown(date[i]):
-            print("Invalid date entry for <{}>\nPlease input a valid date that the stock exchange was not closed for.".format(option))
-            return False,date          
+            error_message.append("Invalid date entry for "+ option+"\nPlease input a valid date that the stock exchange was not closed for")
+            return date,error_message       
         
-    return True,date
+    return date,error_message

@@ -8,6 +8,8 @@ subprocess.check_call([sys.executable, "-m", "pip", "install", "-q","-r", "requi
 from tkinter import*
 from tkinter import ttk
 from tkinter import simpledialog
+from tkinter import messagebox
+
 
 # Makes tables and allows data analysis
 import pandas as pd
@@ -155,10 +157,10 @@ class Main_Page:
     def confirmationPage(self, options, month, day, year):
         date = [None]*2
         check = True
-        check, date = date_config(options,month,day,year)
+        date, error = date_config(options,month,day,year)
 
-        #if check == True:
-            #company_page(subject,bloom,date)
+        if len(error) != 0:
+            messagebox.showerror("Error", error)
 
 
 # Sets color theme
